@@ -1,44 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ProtectedLayout } from "@/components/protected-layout";
-import { useAuth } from "@/lib/auth-context";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, Receipt, TrendingUp, AlertTriangle } from "lucide-react";
+import { Package, Receipt, TrendingUp, AlertTriangle, Wallet, Coins, BarChart3, ArrowUpRight } from "lucide-react";
 import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  PieChart, Pie, Cell, Legend,
 } from "recharts";
+import { useAccountingData } from "@/lib/use-accounting-data";
+import { fmtMoney } from "@/lib/accounting";
 
 export const Route = createFileRoute("/dashboard")({ component: DashboardPage });
-
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  cost_price: number;
-  selling_price: number;
-  stock_quantity: number;
-  low_stock_threshold: number;
-}
-interface Expense {
-  id: string;
-  category: string;
-  amount: number;
-  expense_date: string;
-}
-
-const fmt = (n: number) =>
-  new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(n);
 
 function DashboardPage() {
   return (
@@ -48,31 +20,16 @@ function DashboardPage() {
   );
 }
 
+interface ProductLite { id: string; name: string; category?: string; stock_quantity: number; low_stock_threshold?: number; }
+
 function DashboardInner() {
-  const { user } = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const { products, expenses, stats } = useAccountingData();
+  const pp = products as unknown as ProductLite[];
 
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      const [p, e] = await Promise.all([
-        supabase.from("products").select("*"),
-        supabase.from("expenses").select("*"),
-      ]);
-      setProducts((p.data ?? []) as Product[]);
-      setExpenses((e.data ?? []) as Expense[]);
-    })();
-  }, [user]);
-
-  const stats = useMemo(() => {
-    const inventoryValue = products.reduce((s, p) => s + p.cost_price * p.stock_quantity, 0);
-    const potentialRevenue = products.reduce((s, p) => s + p.selling_price * p.stock_quantity, 0);
-    const totalExpenses = expenses.reduce((s, e) => s + Number(e.amount), 0);
-    const lowStock = products.filter((p) => p.stock_quantity <= p.low_stock_threshold);
-    const profit = potentialRevenue - inventoryValue - totalExpenses;
-    return { inventoryValue, potentialRevenue, totalExpenses, lowStock, profit };
-  }, [products, expenses]);
+  const lowStock = useMemo(
+    () => pp.filter((p) => p.stock_quantity <= (p.low_stock_threshold ?? 5)),
+    [pp]
+  );
 
   const expensesByCategory = useMemo(() => {
     const map = new Map<string, number>();
@@ -82,30 +39,36 @@ function DashboardInner() {
 
   const stockByCategory = useMemo(() => {
     const map = new Map<string, number>();
-    for (const p of products) map.set(p.category, (map.get(p.category) ?? 0) + p.stock_quantity);
+    for (const p of pp) {
+      const cat = p.category ?? "Other";
+      map.set(cat, (map.get(cat) ?? 0) + p.stock_quantity);
+    }
     return Array.from(map, ([name, qty]) => ({ name, qty }));
-  }, [products]);
+  }, [pp]);
 
   const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
 
   return (
     <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <StatCard icon={Coins} label="Total Assets" value={fmtMoney(stats.totalAssets)} hint="Cash + inventory" />
+        <StatCard icon={ArrowUpRight} label="Total Income" value={fmtMoney(stats.totalIncome)} tone="success" />
+        <StatCard icon={Receipt} label="Total Expenses" value={fmtMoney(stats.totalExpenses)} tone="destructive" />
+        <StatCard icon={TrendingUp} label="Net Profit" value={fmtMoney(stats.netProfit)} tone={stats.netProfit >= 0 ? "success" : "destructive"} />
+        <StatCard icon={Package} label="Inventory Value" value={fmtMoney(stats.inventoryValue)} hint={`${pp.length} products`} />
+        <StatCard icon={Wallet} label="Net Cash Flow" value={fmtMoney(stats.netCash)} tone={stats.netCash >= 0 ? "success" : "destructive"} />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Package} label="Inventory value" value={fmt(stats.inventoryValue)} hint={`${products.length} products`} />
-        <StatCard icon={Receipt} label="Total expenses" value={fmt(stats.totalExpenses)} hint={`${expenses.length} entries`} />
-        <StatCard
-          icon={TrendingUp}
-          label="Projected profit"
-          value={fmt(stats.profit)}
-          hint="Revenue − cost − expenses"
-          tone={stats.profit >= 0 ? "success" : "destructive"}
-        />
+        <StatCard icon={BarChart3} label="Cash In" value={fmtMoney(stats.cashIn)} />
+        <StatCard icon={BarChart3} label="Cash Out" value={fmtMoney(stats.cashOut)} />
+        <StatCard icon={Package} label="Inventory Purchases" value={fmtMoney(stats.inventoryPurchases)} />
         <StatCard
           icon={AlertTriangle}
           label="Low stock"
-          value={String(stats.lowStock.length)}
+          value={String(lowStock.length)}
           hint="Items at/below threshold"
-          tone={stats.lowStock.length ? "warning" : undefined}
+          tone={lowStock.length ? "warning" : undefined}
         />
       </div>
 
@@ -123,7 +86,7 @@ function DashboardInner() {
                       <Cell key={i} fill={pieColors[i % pieColors.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: number) => fmt(v)} />
+                  <Tooltip formatter={(v: number) => fmtMoney(v)} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -151,16 +114,16 @@ function DashboardInner() {
         </Card>
       </div>
 
-      {stats.lowStock.length > 0 && (
+      {lowStock.length > 0 && (
         <Card>
           <CardHeader><CardTitle className="text-base">Low stock alerts</CardTitle></CardHeader>
           <CardContent>
             <ul className="divide-y">
-              {stats.lowStock.map((p) => (
+              {lowStock.map((p) => (
                 <li key={p.id} className="flex items-center justify-between py-2">
                   <div>
                     <p className="font-medium">{p.name}</p>
-                    <p className="text-xs text-muted-foreground">{p.category}</p>
+                    <p className="text-xs text-muted-foreground">{p.category ?? "—"}</p>
                   </div>
                   <span className="rounded-md bg-warning/15 px-2 py-1 text-xs font-medium text-warning-foreground">
                     {p.stock_quantity} left
@@ -176,16 +139,10 @@ function DashboardInner() {
 }
 
 function StatCard({
-  icon: Icon,
-  label,
-  value,
-  hint,
-  tone,
+  icon: Icon, label, value, hint, tone,
 }: {
   icon: typeof Package;
-  label: string;
-  value: string;
-  hint?: string;
+  label: string; value: string; hint?: string;
   tone?: "success" | "warning" | "destructive";
 }) {
   const toneClass =

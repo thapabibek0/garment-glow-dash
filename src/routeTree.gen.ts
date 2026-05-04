@@ -9,15 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrialBalanceRouteImport } from './routes/trial-balance'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as LedgerRouteImport } from './routes/ledger'
+import { Route as JournalRouteImport } from './routes/journal'
 import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as IncomeRouteImport } from './routes/income'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CashFlowRouteImport } from './routes/cash-flow'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TrialBalanceRoute = TrialBalanceRouteImport.update({
+  id: '/trial-balance',
+  path: '/trial-balance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LedgerRoute = LedgerRouteImport.update({
+  id: '/ledger',
+  path: '/ledger',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventoryRoute = InventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IncomeRoute = IncomeRouteImport.update({
+  id: '/income',
+  path: '/income',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpensesRoute = ExpensesRouteImport.update({
@@ -28,6 +59,11 @@ const ExpensesRoute = ExpensesRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CashFlowRoute = CashFlowRouteImport.update({
+  id: '/cash-flow',
+  path: '/cash-flow',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -44,48 +80,141 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cash-flow': typeof CashFlowRoute
   '/dashboard': typeof DashboardRoute
   '/expenses': typeof ExpensesRoute
+  '/income': typeof IncomeRoute
   '/inventory': typeof InventoryRoute
+  '/journal': typeof JournalRoute
+  '/ledger': typeof LedgerRoute
+  '/reports': typeof ReportsRoute
+  '/trial-balance': typeof TrialBalanceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cash-flow': typeof CashFlowRoute
   '/dashboard': typeof DashboardRoute
   '/expenses': typeof ExpensesRoute
+  '/income': typeof IncomeRoute
   '/inventory': typeof InventoryRoute
+  '/journal': typeof JournalRoute
+  '/ledger': typeof LedgerRoute
+  '/reports': typeof ReportsRoute
+  '/trial-balance': typeof TrialBalanceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cash-flow': typeof CashFlowRoute
   '/dashboard': typeof DashboardRoute
   '/expenses': typeof ExpensesRoute
+  '/income': typeof IncomeRoute
   '/inventory': typeof InventoryRoute
+  '/journal': typeof JournalRoute
+  '/ledger': typeof LedgerRoute
+  '/reports': typeof ReportsRoute
+  '/trial-balance': typeof TrialBalanceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/expenses' | '/inventory'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/cash-flow'
+    | '/dashboard'
+    | '/expenses'
+    | '/income'
+    | '/inventory'
+    | '/journal'
+    | '/ledger'
+    | '/reports'
+    | '/trial-balance'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/expenses' | '/inventory'
-  id: '__root__' | '/' | '/auth' | '/dashboard' | '/expenses' | '/inventory'
+  to:
+    | '/'
+    | '/auth'
+    | '/cash-flow'
+    | '/dashboard'
+    | '/expenses'
+    | '/income'
+    | '/inventory'
+    | '/journal'
+    | '/ledger'
+    | '/reports'
+    | '/trial-balance'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/cash-flow'
+    | '/dashboard'
+    | '/expenses'
+    | '/income'
+    | '/inventory'
+    | '/journal'
+    | '/ledger'
+    | '/reports'
+    | '/trial-balance'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  CashFlowRoute: typeof CashFlowRoute
   DashboardRoute: typeof DashboardRoute
   ExpensesRoute: typeof ExpensesRoute
+  IncomeRoute: typeof IncomeRoute
   InventoryRoute: typeof InventoryRoute
+  JournalRoute: typeof JournalRoute
+  LedgerRoute: typeof LedgerRoute
+  ReportsRoute: typeof ReportsRoute
+  TrialBalanceRoute: typeof TrialBalanceRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trial-balance': {
+      id: '/trial-balance'
+      path: '/trial-balance'
+      fullPath: '/trial-balance'
+      preLoaderRoute: typeof TrialBalanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ledger': {
+      id: '/ledger'
+      path: '/ledger'
+      fullPath: '/ledger'
+      preLoaderRoute: typeof LedgerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory': {
       id: '/inventory'
       path: '/inventory'
       fullPath: '/inventory'
       preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/income': {
+      id: '/income'
+      path: '/income'
+      fullPath: '/income'
+      preLoaderRoute: typeof IncomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/expenses': {
@@ -100,6 +229,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cash-flow': {
+      id: '/cash-flow'
+      path: '/cash-flow'
+      fullPath: '/cash-flow'
+      preLoaderRoute: typeof CashFlowRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -122,10 +258,25 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  CashFlowRoute: CashFlowRoute,
   DashboardRoute: DashboardRoute,
   ExpensesRoute: ExpensesRoute,
+  IncomeRoute: IncomeRoute,
   InventoryRoute: InventoryRoute,
+  JournalRoute: JournalRoute,
+  LedgerRoute: LedgerRoute,
+  ReportsRoute: ReportsRoute,
+  TrialBalanceRoute: TrialBalanceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

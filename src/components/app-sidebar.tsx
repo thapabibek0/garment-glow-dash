@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Package, Receipt, LogOut, Shirt } from "lucide-react";
+import { LayoutDashboard, Package, Receipt, LogOut, Shirt, TrendingUp, BookOpen, FileText, Scale, Wallet, BarChart3 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -17,8 +17,17 @@ import { useAuth } from "@/lib/auth-context";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Inventory", url: "/inventory", icon: Package },
+  { title: "Income", url: "/income", icon: TrendingUp },
   { title: "Expenses", url: "/expenses", icon: Receipt },
+  { title: "Inventory", url: "/inventory", icon: Package },
+];
+
+const accounting = [
+  { title: "Ledger", url: "/ledger", icon: BookOpen },
+  { title: "Journal", url: "/journal", icon: FileText },
+  { title: "Trial Balance", url: "/trial-balance", icon: Scale },
+  { title: "Cash Flow", url: "/cash-flow", icon: Wallet },
+  { title: "Reports", url: "/reports", icon: BarChart3 },
 ];
 
 export function AppSidebar() {
@@ -44,6 +53,23 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+                    <Link to={item.url}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Accounting</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {accounting.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
                     <Link to={item.url}>
