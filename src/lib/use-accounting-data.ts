@@ -22,7 +22,7 @@ export function useAccountingData() {
       const [i, e, p, l] = await Promise.all([
         supabase.from("incomes").select("*"),
         supabase.from("expenses").select("*"),
-        supabase.from("products").select("id,name,cost_price,stock_quantity"),
+        supabase.from("products").select("id,name,cost_price,stock_quantity,low_stock_threshold,category"),
         supabase.from("inventory_logs").select("*"),
       ]);
       if (cancelled) return;
