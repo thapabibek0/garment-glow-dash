@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrialBalanceRouteImport } from './routes/trial-balance'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ProfitLossRouteImport } from './routes/profit-loss'
 import { Route as LedgerRouteImport } from './routes/ledger'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as InventoryRouteImport } from './routes/inventory'
@@ -18,6 +19,7 @@ import { Route as IncomeRouteImport } from './routes/income'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CashFlowRouteImport } from './routes/cash-flow'
+import { Route as BalanceSheetRouteImport } from './routes/balance-sheet'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -29,6 +31,11 @@ const TrialBalanceRoute = TrialBalanceRouteImport.update({
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfitLossRoute = ProfitLossRouteImport.update({
+  id: '/profit-loss',
+  path: '/profit-loss',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LedgerRoute = LedgerRouteImport.update({
@@ -66,6 +73,11 @@ const CashFlowRoute = CashFlowRouteImport.update({
   path: '/cash-flow',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BalanceSheetRoute = BalanceSheetRouteImport.update({
+  id: '/balance-sheet',
+  path: '/balance-sheet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -80,6 +92,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/balance-sheet': typeof BalanceSheetRoute
   '/cash-flow': typeof CashFlowRoute
   '/dashboard': typeof DashboardRoute
   '/expenses': typeof ExpensesRoute
@@ -87,12 +100,14 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof InventoryRoute
   '/journal': typeof JournalRoute
   '/ledger': typeof LedgerRoute
+  '/profit-loss': typeof ProfitLossRoute
   '/reports': typeof ReportsRoute
   '/trial-balance': typeof TrialBalanceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/balance-sheet': typeof BalanceSheetRoute
   '/cash-flow': typeof CashFlowRoute
   '/dashboard': typeof DashboardRoute
   '/expenses': typeof ExpensesRoute
@@ -100,6 +115,7 @@ export interface FileRoutesByTo {
   '/inventory': typeof InventoryRoute
   '/journal': typeof JournalRoute
   '/ledger': typeof LedgerRoute
+  '/profit-loss': typeof ProfitLossRoute
   '/reports': typeof ReportsRoute
   '/trial-balance': typeof TrialBalanceRoute
 }
@@ -107,6 +123,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/balance-sheet': typeof BalanceSheetRoute
   '/cash-flow': typeof CashFlowRoute
   '/dashboard': typeof DashboardRoute
   '/expenses': typeof ExpensesRoute
@@ -114,6 +131,7 @@ export interface FileRoutesById {
   '/inventory': typeof InventoryRoute
   '/journal': typeof JournalRoute
   '/ledger': typeof LedgerRoute
+  '/profit-loss': typeof ProfitLossRoute
   '/reports': typeof ReportsRoute
   '/trial-balance': typeof TrialBalanceRoute
 }
@@ -122,6 +140,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/balance-sheet'
     | '/cash-flow'
     | '/dashboard'
     | '/expenses'
@@ -129,12 +148,14 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/journal'
     | '/ledger'
+    | '/profit-loss'
     | '/reports'
     | '/trial-balance'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/balance-sheet'
     | '/cash-flow'
     | '/dashboard'
     | '/expenses'
@@ -142,12 +163,14 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/journal'
     | '/ledger'
+    | '/profit-loss'
     | '/reports'
     | '/trial-balance'
   id:
     | '__root__'
     | '/'
     | '/auth'
+    | '/balance-sheet'
     | '/cash-flow'
     | '/dashboard'
     | '/expenses'
@@ -155,6 +178,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/journal'
     | '/ledger'
+    | '/profit-loss'
     | '/reports'
     | '/trial-balance'
   fileRoutesById: FileRoutesById
@@ -162,6 +186,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  BalanceSheetRoute: typeof BalanceSheetRoute
   CashFlowRoute: typeof CashFlowRoute
   DashboardRoute: typeof DashboardRoute
   ExpensesRoute: typeof ExpensesRoute
@@ -169,6 +194,7 @@ export interface RootRouteChildren {
   InventoryRoute: typeof InventoryRoute
   JournalRoute: typeof JournalRoute
   LedgerRoute: typeof LedgerRoute
+  ProfitLossRoute: typeof ProfitLossRoute
   ReportsRoute: typeof ReportsRoute
   TrialBalanceRoute: typeof TrialBalanceRoute
 }
@@ -187,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profit-loss': {
+      id: '/profit-loss'
+      path: '/profit-loss'
+      fullPath: '/profit-loss'
+      preLoaderRoute: typeof ProfitLossRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ledger': {
@@ -238,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CashFlowRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/balance-sheet': {
+      id: '/balance-sheet'
+      path: '/balance-sheet'
+      fullPath: '/balance-sheet'
+      preLoaderRoute: typeof BalanceSheetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -258,6 +298,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  BalanceSheetRoute: BalanceSheetRoute,
   CashFlowRoute: CashFlowRoute,
   DashboardRoute: DashboardRoute,
   ExpensesRoute: ExpensesRoute,
@@ -265,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   InventoryRoute: InventoryRoute,
   JournalRoute: JournalRoute,
   LedgerRoute: LedgerRoute,
+  ProfitLossRoute: ProfitLossRoute,
   ReportsRoute: ReportsRoute,
   TrialBalanceRoute: TrialBalanceRoute,
 }
