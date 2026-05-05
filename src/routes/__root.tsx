@@ -8,7 +8,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Threadly - Clothing Shop Manager" },
+      { title: "Yangse - Clothing Shop Manager" },
       { name: "description", content: "Inventory and expense tracking for clothing businesses." },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
