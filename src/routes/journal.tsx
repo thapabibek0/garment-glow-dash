@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAccountingData } from "@/lib/use-accounting-data";
 import { fmtMoney } from "@/lib/accounting";
+import { ExportButtons } from "@/components/export-buttons";
+import { exportCSV, exportPDF } from "@/lib/export-utils";
 
 export const Route = createFileRoute("/journal")({ component: () => (
   <ProtectedLayout title="Journal Entries"><Inner /></ProtectedLayout>
@@ -11,9 +13,16 @@ export const Route = createFileRoute("/journal")({ component: () => (
 
 function Inner() {
   const { journal, loading } = useAccountingData();
+  const headers = ["Date", "Type", "Description", "Debit", "Credit", "Amount"];
+  const rows = journal.map((j) => [j.date, j.type, j.description, j.debit_account, j.credit_account, j.amount.toFixed(2)]);
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">Auto-generated from every income, expense, and inventory purchase.</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm text-muted-foreground">Auto-generated from every income, expense, and inventory purchase.</p>
+        <ExportButtons
+          onCSV={() => exportCSV("journal", headers, rows)}
+          onPDF={() => exportPDF("journal", "Journal Entries", [{ headers, rows }])}
+        /></div>
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">

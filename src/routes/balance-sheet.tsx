@@ -3,6 +3,8 @@ import { ProtectedLayout } from "@/components/protected-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAccountingData } from "@/lib/use-accounting-data";
 import { fmtMoney } from "@/lib/accounting";
+import { ExportButtons } from "@/components/export-buttons";
+import { exportCSV, exportPDF } from "@/lib/export-utils";
 
 export const Route = createFileRoute("/balance-sheet")({
   component: () => (<ProtectedLayout title="Balance Sheet"><Inner /></ProtectedLayout>),
@@ -16,8 +18,21 @@ function Inner() {
   const liabilities = 0;
   const equity = totalAssets - liabilities;
 
+  const assetRows: (string | number)[][] = [["Cash", cash.toFixed(2)], ["Inventory", inventory.toFixed(2)], ["Total Assets", totalAssets.toFixed(2)]];
+  const liabRows: (string | number)[][] = [["Liabilities", liabilities.toFixed(2)], ["Owner's Equity", equity.toFixed(2)], ["Total", (liabilities + equity).toFixed(2)]];
+
+  const handleCSV = () => exportCSV("balance-sheet", ["Section", "Label", "Amount"], [
+    ...assetRows.map((r) => ["Assets", ...r] as (string | number)[]),
+    ...liabRows.map((r) => ["Liabilities & Equity", ...r] as (string | number)[]),
+  ]);
+  const handlePDF = () => exportPDF("balance-sheet", "Balance Sheet", [
+    { title: "Assets", headers: ["Item", "Amount"], rows: assetRows },
+    { title: "Liabilities & Equity", headers: ["Item", "Amount"], rows: liabRows },
+  ]);
+
   return (
     <div className="space-y-4">
+      <ExportButtons onCSV={handleCSV} onPDF={handlePDF} />
       <p className="text-sm text-muted-foreground">
         Snapshot of what you own (assets) versus what you owe (liabilities). Equity = Assets − Liabilities.
       </p>

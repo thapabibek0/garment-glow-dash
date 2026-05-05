@@ -37,13 +37,17 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: parsed.data.email,
           password: parsed.data.password,
           options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
         if (error) throw error;
-        toast.success("Account created — you're signed in.");
+        if (!data.session) {
+          toast.success("Check your inbox to verify your email before signing in.");
+          return;
+        }
+        toast.success("Account created!");
       } else {
         const { error } = await supabase.auth.signInWithPassword(parsed.data);
         if (error) throw error;
@@ -65,7 +69,7 @@ function AuthPage() {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Shirt className="h-5 w-5" />
           </div>
-          <span className="text-lg font-semibold">Threadly</span>
+          <span className="text-lg font-semibold">Yangse</span>
         </Link>
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <Tabs defaultValue="signin">
