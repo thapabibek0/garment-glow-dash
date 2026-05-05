@@ -27,8 +27,30 @@ function Inner() {
     return Array.from(m, ([k, v]) => ({ name: k, value: v }));
   }, [expenses]);
 
+  const incomeRows = incomeBySource.map((r) => [r.name, r.value.toFixed(2)]);
+  const expenseRows = expenseByCategory.map((r) => [r.name, r.value.toFixed(2)]);
+  const summaryRows: (string | number)[][] = [
+    ["Total Revenue", stats.totalIncome.toFixed(2)],
+    ["Total Expenses", stats.totalExpenses.toFixed(2)],
+    ["Net Profit", stats.netProfit.toFixed(2)],
+    ["Margin %", stats.grossMargin.toFixed(2)],
+  ];
+
+  const handleCSV = () => exportCSV("profit-loss", ["Section", "Label", "Amount"], [
+    ...summaryRows.map((r) => ["Summary", ...r] as (string | number)[]),
+    ...incomeRows.map((r) => ["Revenue", ...r] as (string | number)[]),
+    ...expenseRows.map((r) => ["Expense", ...r] as (string | number)[]),
+  ]);
+
+  const handlePDF = () => exportPDF("profit-loss", "Profit & Loss", [
+    { title: "Summary", headers: ["Item", "Amount"], rows: summaryRows },
+    { title: "Revenue by Source", headers: ["Source", "Amount"], rows: incomeRows },
+    { title: "Expenses by Category", headers: ["Category", "Amount"], rows: expenseRows },
+  ]);
+
   return (
     <div className="space-y-4">
+      <ExportButtons onCSV={handleCSV} onPDF={handlePDF} />
       <div className="grid gap-4 sm:grid-cols-3">
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-normal text-muted-foreground">Revenue</CardTitle></CardHeader>
           <CardContent><p className="text-2xl font-bold text-success">{fmtMoney(stats.totalIncome)}</p></CardContent></Card>
