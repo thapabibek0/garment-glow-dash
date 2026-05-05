@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import {
@@ -35,24 +35,31 @@ export function useAccountingData() {
     return () => { cancelled = true; };
   }, [user]);
 
-  const productMap = new Map(products.map((p) => [p.id, p]));
-  const journal = buildJournal(incomes, expenses, logs, productMap);
-  const ledger = buildLedger(journal);
+  return useMemo(() => {
+    const productMap = new Map(products.map((p) => [p.id, p]));
+    const journal = buildJournal(incomes, expenses, logs, productMap);
+    const ledger = buildLedger(journal);
 
-  const totalIncome = incomes.reduce((s, x) => s + Number(x.amount), 0);
-  const totalExpenses = expenses.reduce((s, x) => s + Number(x.amount), 0);
-  const inventoryValue = products.reduce((s, p) => s + Number(p.cost_price) * p.stock_quantity, 0);
-  const inventoryPurchases = journal
-    .filter((j) => j.type === "inventory")
-    .reduce((s, j) => s + j.amount, 0);
-  const cashIn = totalIncome;
-  const cashOut = totalExpenses + inventoryPurchases;
-  const netCash = cashIn - cashOut;
-  const netProfit = totalIncome - totalExpenses;
-  const totalAssets = inventoryValue + netCash; // simplified: cash + inventory
+    const totalIncome = incomes.reduce((s, x) => s + Number(x.amount), 0);
+    const totalExpenses = expenses.reduce((s, x) => s + Number(x.amount), 0);
+    const inventoryValue = products.reduce((s, p) => s + Number(p.cost_price) * p.stock_quantity, 0);
+    const inventoryPurchases = journal
+      .filter((j) => j.type === "inventory")
+      .reduce((s, j) => s + j.amount, 0);
+    const cashIn = totalIncome;
+    const cashOut = totalExpenses + inventoryPurchases;
+    const netCash = cashIn - cashOut;
+    const netProfit = totalIncome - totalExpenses;
+    const grossMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
+    const totalAssets = inventoryValue + netCash; // cash + inventory
+    const equity = totalAssets; // no liabilities tracked → equity = assets
 
-  return {
-    loading, incomes, expenses, products, logs, journal, ledger,
-    stats: { totalIncome, totalExpenses, inventoryValue, inventoryPurchases, cashIn, cashOut, netCash, netProfit, totalAssets },
-  };
+    return {
+      loading, incomes, expenses, products, logs, journal, ledger,
+      stats: {
+        totalIncome, totalExpenses, inventoryValue, inventoryPurchases,
+        cashIn, cashOut, netCash, netProfit, grossMargin, totalAssets, equity,
+      },
+    };
+  }, [loading, incomes, expenses, products, logs]);
 }

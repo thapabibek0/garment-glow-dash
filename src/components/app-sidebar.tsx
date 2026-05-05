@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Package, Receipt, LogOut, Shirt, TrendingUp, BookOpen, FileText, Scale, Wallet, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Package, Receipt, LogOut, Shirt, TrendingUp, BookOpen, FileText, Scale, Wallet, BarChart3, PiggyBank, LineChart } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -26,6 +26,8 @@ const accounting = [
   { title: "Ledger", url: "/ledger", icon: BookOpen },
   { title: "Journal", url: "/journal", icon: FileText },
   { title: "Trial Balance", url: "/trial-balance", icon: Scale },
+  { title: "Profit & Loss", url: "/profit-loss", icon: LineChart },
+  { title: "Balance Sheet", url: "/balance-sheet", icon: PiggyBank },
   { title: "Cash Flow", url: "/cash-flow", icon: Wallet },
   { title: "Reports", url: "/reports", icon: BarChart3 },
 ];
