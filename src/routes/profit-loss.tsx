@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAccountingData } from "@/lib/use-accounting-data";
 import { fmtMoney } from "@/lib/accounting";
+import { ExportButtons } from "@/components/export-buttons";
+import { exportCSV, exportPDF } from "@/lib/export-utils";
 
 export const Route = createFileRoute("/profit-loss")({
   component: () => (<ProtectedLayout title="Profit & Loss"><Inner /></ProtectedLayout>),
